@@ -63,11 +63,23 @@ class RRTAlgorithm():
             #if at any point of the movement the testPoint is in obstacle then grid[pointy][pointx]=1 and we return true
             if self.grid[round(testPoint[1]), round(testPoint[0])] == 1:
                 return True
-        return False
+        return False  
+    
+    def isInObstacleGoal(self, locationStart, locationEnd):
+        u_hat = self.unitVector(locationStart, locationEnd)
+        testPoint = np.array([0.0, 0.0])
+        for i in range(round(np.sqrt((locationEnd[0]-locationStart.locationX)**2 + (locationEnd[1]-locationStart.locationY)**2))): 
+            #movement along the vector joining the nearest node and the sampled point
+            testPoint[0] = min(grid.shape[1] - 1, locationStart.locationX + i * u_hat[0])
+            testPoint[1] = min(grid.shape[0] - 1, locationStart.locationY + i * u_hat[1]) 
+            #if at any point of the movement the testPoint is in obstacle then grid[pointy][pointx]=1 and we return true
+            if self.grid[round(testPoint[1]), round(testPoint[0])] == 1:
+                return True
+        return False      
 
     def unitVector(self, locationStart, locationEnd):
         v = np.array([locationEnd[0] - locationStart.locationX, locationEnd[1] - locationStart.locationY])
-        u_hat = v / np.linalg.norm(v)
+        u_hat = v / np.linalg.norm(v) 
         return u_hat
     
     #Use of recursion is done in the following method to find the nearest node to the given sampled point
@@ -128,6 +140,7 @@ plt.ylabel('Y-axis (m)')
 
 rrt = RRTAlgorithm(start, goal, grid, stepSize) #Creating an object rrt. Use rrt to access members of the class RRTAlgorithm
 plt.pause(2) #2 second pause to show the start point. Otherwise it would not be seen 
+
 k=0
 while True: 
     rrt.resetNearestValues()
@@ -135,11 +148,20 @@ while True:
     rrt.findNearest(rrt.randomTree, point) #nearstDist and nearestNode value has been updated
     new = rrt.steerToPoint(rrt.nearestNode, point) 
     bool = rrt.isInObstacle(rrt.nearestNode, new)
+
+    #If there exists a direct psth between the nearest node and the goal we take that path 
+    if rrt.isInObstacleGoal(rrt.nearestNode,goal)==False:
+        rrt.addChild(goal[0], goal[1])
+        rrt.retraceRRTPath(rrt.goal)
+        print('Goal Found')
+        break
+
     if bool == False:
         rrt.addChild(new[0], new[1])
         plt.pause(0.10) #giving an interval of 10 seconds so that the tree formation is seen
-        plt.plot([rrt.nearestNode.locationX, new[0]], [rrt.nearestNode.locationY, new[1]], 'go', linestyle="--")
-        #if the new point generated is within the goal region, we just need to connect that to the goal
+        plt.plot([rrt.nearestNode.locationX, new[0]], [rrt.nearestNode.locationY, new[1]], 'go', linestyle="--") 
+        #if the new point generated is within the goal region, we just need to connect that to the goal 
+        
         if (rrt.goalFound(new)):
             rrt.addChild(goal[0], goal[1])
             rrt.retraceRRTPath(rrt.goal)
@@ -158,4 +180,4 @@ for i in range(len(rrt.Waypoints) - 1):
     plt.plot([rrt.Waypoints[i][0], rrt.Waypoints[i + 1][0]], [rrt.Waypoints[i][1], rrt.Waypoints[i + 1][1]], 'ro',
              linestyle="-")
     plt.pause(0.10)
-plt.show()
+plt.show() 
