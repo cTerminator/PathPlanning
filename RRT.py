@@ -5,7 +5,6 @@ import random
 
 np.set_printoptions(precision=3, suppress=True)
 
- #self keyword is used to access variables of the class and points to the current object of the class
 class treeNode():
     def __init__(self, locationX, locationY):    
         self.locationX = locationX                 
@@ -13,9 +12,6 @@ class treeNode():
         self.children = []                        
         self.parent = None                        
         
-    # None is used to define a null value or null object in python. Not same as empty string, false or zero
-
-
 class RRTAlgorithm():
     def __init__(self, start, goal, grid, stepSize):
         self.randomTree = treeNode(start[0], start[1])   
@@ -149,7 +145,7 @@ while True:
     new = rrt.steerToPoint(rrt.nearestNode, point) 
     bool = rrt.isInObstacle(rrt.nearestNode, new)
 
-    #If there exists a direct psth between the nearest node and the goal we take that path 
+    #If there exists a direct path between the nearest node and the goal we take that path 
     if rrt.isInObstacleGoal(rrt.nearestNode,goal)==False:
         rrt.addChild(goal[0], goal[1])
         rrt.retraceRRTPath(rrt.goal)
@@ -158,7 +154,7 @@ while True:
 
     if bool == False:
         rrt.addChild(new[0], new[1])
-        plt.pause(0.10) #giving an interval of 10 seconds so that the tree formation is seen
+        plt.pause(0.10) #giving an interval of 10 seconds so that the tree formation is seen clearly
         plt.plot([rrt.nearestNode.locationX, new[0]], [rrt.nearestNode.locationY, new[1]], 'go', linestyle="--") 
         #if the new point generated is within the goal region, we just need to connect that to the goal 
         
