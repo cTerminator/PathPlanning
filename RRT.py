@@ -39,7 +39,7 @@ class RRTAlgorithm():
         point = np.array([x, y])
         return point                              
 
-    def steerToPoint(self, locationStart, locationEnd):#locationEnd = sampled point,location start = updatednearestNode
+    def steerToPoint(self, locationStart, locationEnd):
         offset = self.rho * self.unitVector(locationStart, locationEnd)  
         point = np.array([locationStart.locationX + offset[0], locationStart.locationY + offset[1]])
          #constraints to ensure we do not steer out of the grid
